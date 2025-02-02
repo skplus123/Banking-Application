@@ -4,7 +4,6 @@ import com.Banking.Application.entity.Account;
 import com.Banking.Application.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -13,31 +12,48 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    /**
+     * create a new bank account
+     * @param account
+     * @return account
+     */
     public Account createAccount(Account account) {
         return accountRepository.save(account);
     }
 
-    public Optional<Account> getAccountById(Long id) {
+    /**
+     * retrive account by account id
+     * @param id
+     * @return account
+     */
+    public Optional<Account> getAccount(Long id) {
         return accountRepository.findById(id);
     }
 
-    public Account deposite(Long id, double amount) {
-        Optional<Account> account = accountRepository.findById(id);
-        if (account.isPresent()) {
-            Account account1 = account.get();
-            account1.setBalance(account1.getBalance() + amount);
-            return accountRepository.save(account1);
-        }
-        return null;
+    /**
+     * deposit the money to bank account
+     * @param id
+     * @param amount
+     * @return account
+     */
+    public Account deposit(Long id, double amount) {
+        Account account = getAccount(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        account.setBalance(account.getBalance() + amount);
+        return accountRepository.save(account);
     }
 
+    /**
+     * winthdraw the money from account
+     * @param id
+     * @param amount
+     * @return account
+     */
     public Account withdraw(Long id, double amount) {
-        Optional<Account> account = accountRepository.findById(id);
-        if (account.isPresent()) {
-            Account account1 = account.get();
-            account1.setBalance(account1.getBalance() - amount);
-            return accountRepository.save(account1);
+        Account account = getAccount(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        if (account.getBalance() < amount) {
+            throw new RuntimeException("Insufficient funds");
         }
-        return null;
+        account.setBalance(account.getBalance() - amount);
+        return accountRepository.save(account);
     }
 }
