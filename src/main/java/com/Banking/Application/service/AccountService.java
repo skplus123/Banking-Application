@@ -1,6 +1,7 @@
 package com.Banking.Application.service;
 
 import com.Banking.Application.entity.Account;
+import com.Banking.Application.exception.AccountNotFoundException;
 import com.Banking.Application.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,11 +37,12 @@ public class AccountService {
      * @param amount
      * @return account
      */
-    public Account deposit(Long id, double amount) {
-        Account account = getAccount(id).orElseThrow(() -> new RuntimeException("Account not found"));
+    public Account deposit(Long id, double amount) throws AccountNotFoundException {
+        Account account = getAccount(id).orElseThrow(() -> new AccountNotFoundException("Account with ID " + id + " not found"));
         account.setBalance(account.getBalance() + amount);
         return accountRepository.save(account);
     }
+
 
     /**
      * winthdraw the money from account
