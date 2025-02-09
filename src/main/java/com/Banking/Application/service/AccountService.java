@@ -6,6 +6,7 @@ import com.Banking.Application.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -32,7 +33,9 @@ public class AccountService {
      * @param id
      * @return account
      */
+    @Cacheable("account")
     public Optional<Account> getAccount(Long id) {
+        System.out.println("Fetching account from the database for id: " + id);
         return accountRepository.findById(id);
     }
 
