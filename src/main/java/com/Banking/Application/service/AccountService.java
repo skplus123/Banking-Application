@@ -10,7 +10,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
-
+/**
+ * Service class for managing bank accounts.
+ * Provides operations to create accounts, retrieve account details,
+ * deposit funds, and withdraw funds from an account.
+ */
 @Service
 public class AccountService {
 
@@ -35,15 +39,16 @@ public class AccountService {
      */
     @Cacheable("account")
     public Optional<Account> getAccount(Long id) {
-        System.out.println("Fetching account from the database for id: " + id);
+        log.info("Fetching account from the database for id: " + id);
         return accountRepository.findById(id);
     }
 
     /**
-     * deposit the money to bank account
-     * @param id
-     * @param amount
-     * @return account
+     * Deposits money into the account.
+     * @param id   the ID of the account
+     * @param amount   the amount to deposit
+     * @return   the updated account
+     * @throws AccountNotFoundException   if the account is not found
      */
     public Account deposit(Long id, double amount) throws AccountNotFoundException {
         log.info("Deposit request received for Account ID: {} with Amount: {}", id, amount);
@@ -53,18 +58,18 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-
     /**
-     * winthdraw the money from account
-     * @param id
-     * @param amount
-     * @return account
+     * Withdraws money from the account.
+     * @param id    the ID of the account
+     * @param amount   amount the amount to withdraw
+     * @return   the updated account
+     * @throws AccountNotFoundException   if the account is not found or if there are insufficient funds
      */
-    public Account withdraw(Long id, double amount) {
+    public Account withdraw(Long id, double amount) throws AccountNotFoundException {
         log.info("Withdraw request received for Account ID: {} with Amount: {}", id, amount);
-        Account account = getAccount(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        Account account = getAccount(id).orElseThrow(() -> new AccountNotFoundException("Account not found"));
         if (account.getBalance() < amount) {
-            throw new RuntimeException("Insufficient funds");
+            throw new AccountNotFoundException("Insufficient funds");
         }
         account.setBalance(account.getBalance() - amount);
         log.info("New balance for Account ID {}: {}", id, account.getBalance());

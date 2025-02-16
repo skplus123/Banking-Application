@@ -32,7 +32,7 @@ public class AccountController {
     }
 
     @PostMapping("/{id}/withdraw")
-    public Account withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request) {
+    public Account withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request) throws AccountNotFoundException {
         Double amount = request.get("amount");
         return accountService.withdraw(id, amount);
     }
