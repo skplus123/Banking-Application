@@ -67,7 +67,7 @@ public class AccountService {
      */
     public Account withdraw(Long id, double amount) throws AccountNotFoundException {
         log.info("Withdraw request received for Account ID: {} with Amount: {}", id, amount);
-        Account account = getAccount(id).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        Account account = getAccount(id).orElseThrow(() -> new AccountNotFoundException("Account with ID " + id + " not found"));
         if (account.getBalance() < amount) {
             throw new AccountNotFoundException("Insufficient funds");
         }
